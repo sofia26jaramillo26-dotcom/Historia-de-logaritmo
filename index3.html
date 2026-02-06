@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logaritmos y Python - Aplicación Educativa</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Arial', sans-serif;
+        }
+
+        :root {
+            --color-primario: #2c3e50;
+            --color-secundario: #3498db;
+            --color-accent: #e74c3c;
+            --color-fondo: #f8f9fa;
+            --color-texto: #333;
+            --color-texto-claro: #666;
+            --color-borde: #ddd;
+            --sombra: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        body {
+            display: flex;
+            height: 100vh;
+            background-color: var(--color-fondo);
+            color: var(--color-texto);
+            overflow: hidden;
+        }
+
+        /* Menú lateral */
+        .menu-lateral {
+            width: 280px;
+            background: linear-gradient(180deg, var(--color-primario) 0%, #1a252f 100%);
+            color: white;
+            display: flex;
+            flex-direction: column;
+            box-shadow: var(--sombra);
+            z-index: 10;
+        }
+
+        .logo {
+            padding: 25px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .logo h1 {
+            font-size: 1.8rem;
+            font-weight: 300;
+            color: white;
+            margin-bottom: 5px;
+        }
+
+        .logo-subtitulo {
+            color: var(--color-secundario);
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .nav-menu {
+            flex-grow: 1;
+            padding: 20px 0;
+        }
+
+        .nav-item {
+            padding: 16px 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 4px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 1rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        .nav-item.active {
+            background-color: rgba(52, 152, 219, 0.2);
+            border-left: 4px solid var(--color-secundario);
+        }
+
+        .nav-icon {
+            font-size: 1.2rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        /* Contenido principal */
+        .contenido-principal {
+            flex-grow: 1;
+            padding: 0;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .seccion {
+            display: none;
+            animation: fadeIn 0.5s ease;
+            height: 100%;
+            overflow-y: auto;
+        }
+
+        .seccion.activa {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .cabecera-seccion {
+            background: white;
+            padding: 25px 40px;
+            border-bottom: 1px solid var(--color-borde);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .titulo-seccion {
+            font-size: 2.2rem;
+            color: var(--color-primario);
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .subtitulo-seccion {
+            color: var(--color-texto-claro);
+            font-size: 1.1rem;
+            font-weight: 400;
+        }
+
+        .contenido-seccion {
+            flex-grow: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Sección Historia */
+        .historia-contenido {
+            max-width: 1000px;
+            line-height: 1.8;
+            margin: 0 auto;
+        }
+
+        .historia-seccion {
+            margin-bottom: 40px;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            border-left: 5px solid var(--color-secundario);
+        }
+
+        .historia-seccion h3 {
+            color: var(--color-primario);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #f0f0f0;
+            font-size: 1.6rem;
+        }
+
+        .historia-parrafo {
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
+
+        .matematico {
+            font-weight: 600;
+            color: var(--color-accent);
+            background-color: rgba(231, 76, 60, 0.1);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+
+        .fecha {
+            color: var(--color-secundario);
+            font-weight: 600;
+        }
+
+        .formula-destacada {
+            background-color: #f8f9fa;
+            border: 2px solid var(--color-borde);
+            padding: 25px;
+            margin: 25px 0;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.4rem;
+            color: var(--color-primario);
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        /* Sección Funciones */
+        .funciones-contenido {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 1100px) {
+            .funciones-contenido {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .panel-codigo {
+            background-color: #1e1e1e;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: var(--sombra);
+            overflow: hidden;
+        }
+
+        .panel-codigo h3 {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+        }
+
+        .codigo {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+            padding: 25px;
+            border-radius: 8px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 1rem;
+            overflow-x: auto;
+            line-height: 1.6;
+            border: 1px solid #333;
+        }
+
+        .comentario {
+            color: #6a9955;
+        }
+
+        .funcion-nombre {
+            color: #dcdcaa;
+        }
+
+        .palabra-clave {
+            color: #569cd6;
+        }
+
+        .cadena {
+            color: #ce9178;
+        }
+
+        .numero {
+            color: #b5cea8;
+        }
+
+        .calculadora {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            height: fit-content;
+        }
+
+        .calculadora h3 {
+            color: var(--color-primario);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+        }
+
+        .input-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: var(--color-primario);
+            font-size: 1.05rem;
+        }
+
+        input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--color-borde);
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: all 0.3s;
+            background-color: #f9f9f9;
+        }
+
+        input[type="number"]:focus, input[type="text"]:focus {
+            outline: none;
+            border-color: var(--color-secundario);
+            background-color: white;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+        }
+
+        .btn-calcular {
+            background: linear-gradient(135deg, var(--color-secundario) 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 16px 32px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        .btn-calcular:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(52, 152, 219, 0.3);
+        }
+
+        .resultado {
+            margin-top: 30px;
+            padding: 25px;
+            background: linear-gradient(135deg, #e8f4fc 0%, #d4eaf7 100%);
+            border-radius: 10px;
+            border-left: 5px solid var(--color-secundario);
+            display: none;
+        }
+
+        .resultado.visible {
+            display: block;
+            animation: slideIn 0.5s ease;
+        }
+
+        .resultado-titulo {
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--color-primario);
+            font-size: 1.2rem;
+        }
+
+        .resultado-valor {
+            font-size: 2rem;
+            color: var(--color-accent);
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+        }
+
+        .funcion-formula {
+            font-family: 'Cambria Math', 'Times New Roman', serif;
+            font-size: 1.3rem;
+            color: var(--color-primario);
+            text-align: center;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: white;
+            border-radius: 8px;
+            border: 1px solid var(--color-borde);
+        }
+
+        /* Sección Python */
+        .python-contenido {
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        .python-card {
+            background: white;
+            padding: 35px;
+            border-radius: 12px;
+            box-shadow: var(--sombra);
+            margin-bottom: 30px;
+            border-top: 5px solid #3776ab;
+        }
+
+        .python-card h3 {
+            color: #3776ab;
+            margin-bottom: 20px;
+            font-size: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .python-icon {
+            font-size: 1.8rem;
+        }
+
+        .python-lista {
+            padding-left: 25px;
+            margin: 20px 0;
+        }
+
+        .python-lista li {
+            margin-bottom: 12px;
+            padding-left: 10px;
+        }
+
+        .ventajas-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 25px 0;
+        }
+
+        .ventaja {
+            background: #f0f7ff;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3776ab;
+        }
+
+        .ventaja h4 {
+            color: var(--color-primario);
+            margin-bottom: 10px;
+        }
+
+        /* Animaciones */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            body {
+                flex-direction: column;
+            }
+            
+            .menu-lateral {
+                width: 100%;
+                height: auto;
+                max-height: 80px;
+                overflow: hidden;
+            }
+            
+            .menu-lateral:hover,
+            .menu-lateral:focus-within {
+                max-height: 500px;
+                transition: max-height 0.5s ease;
+            }
+            
+            .nav-menu {
+                display: flex;
+                overflow-x: auto;
+                padding: 0;
+                flex-wrap: wrap;
+            }
+            
+            .nav-item {
+                flex-shrink: 0;
+                border-left: none;
+                border-bottom: 4px solid transparent;
+                min-width: 120px;
+            }
+            
+            .nav-item.active {
+                border-left: none;
+                border-bottom: 4px solid var(--color-secundario);
+            }
+            
+            .contenido-seccion {
+                padding: 25px;
+            }
+            
+            .cabecera-seccion {
+                padding: 20px 25px;
+            }
+            
+            .titulo-seccion {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Scrollbar personalizada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--color-secundario);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <!-- Menú lateral -->
+    <div class="menu-lateral">
+        <div class="logo">
+            <h1>Logaritmos & Python</h1>
+            <div class="logo-subtitulo">Aplicación Educativa Interactiva</div>
+        </div>
+        
+        <div class="nav-menu">
+            <div class="nav-item active" data-target="historia">
+                <div class="nav-icon">📜</div>
+                <div>Historia del Logaritmo</div>
+            </div>
+            
+            <div class="nav-item" data-target="funciones">
+                <div class="nav-icon">📐</div>
+                <div>Funciones Matemáticas</div>
+            </div>
+            
+            <div class="nav-item" data-target="python">
+                <div class="nav-icon">🐍</div>
+                <div>Introducción a Python</div>
+            </div>
+        </div>
+        
+        <div style="padding: 20px; text-align: center; font-size: 0.9rem; color: rgba(255,255,255,0.6);">
+            <div>Matemáticas • Programación • Educación</div>
+        </div>
+    </div>
+    
+    <!-- Contenido principal -->
+    <div class="contenido-principal">
+        <!-- Sección Historia -->
+        <div class="seccion activa" id="historia">
+            <div class="cabecera-seccion">
+                <h1 class="titulo-seccion">Historia del Logaritmo</h1>
+                <div class="subtitulo-seccion">Desde Napier hasta las aplicaciones modernas</div>
+            </div>
+            
+            <div class="contenido-seccion">
+                <div class="historia-contenido">
+                    <!-- Sección 1 -->
+                    <div class="historia-seccion">
+                        <h3>Orígenes y Desarrollo Temprano</h3>
+                        <p class="historia-parrafo">
+                            El concepto de logaritmo surgió a principios del siglo XVII como respuesta a la necesidad de simplificar cálculos complejos en astronomía, navegación y comercio. <span class="matematico">John Napier</span> (1550-1617), un terrateniente escocés aficionado a las matemáticas, publicó en <span class="fecha">1614</span> su obra <em>"Mirifici Logarithmorum Canonis Descriptio"</em>, donde introdujo por primera vez los logaritmos.
+                        </p>
+                        <p class="historia-parrafo">
+                            Napier concibió los logaritmos no como exponentes sino mediante una ingeniosa analogía cinemática que relacionaba progresiones aritméticas y geométricas. Su sistema, aunque complejo, permitía transformar multiplicaciones en sumas y divisiones en restas, reduciendo drásticamente el tiempo y esfuerzo requerido para cálculos astronómicos. Paralelamente, el matemático suizo <span class="matematico">Jobst Bürgi</span> desarrolló un sistema similar de manera independiente, aunque lo publicó varios años después que Napier.
+                        </p>
+                    </div>
+                    
+                    <!-- Sección 2 -->
+                    <div class="historia-seccion">
+                        <h3>Formalización Matemática y Mejoras</h3>
+                        <p class="historia-parrafo">
+                            La contribución decisiva para la consolidación de los logaritmos vino de <span class="matematico">Henry Briggs</span> (1561-1630), quien reconoció el potencial del descubrimiento de Napier y propuso mejoras fundamentales. Briggs visitó a Napier en Edimburgo en <span class="fecha">1615</span> y ambos acordaron desarrollar un sistema más práctico: los <strong>logaritmos comunes</strong> o de base 10.
+                        </p>
+                        <p class="historia-parrafo">
+                            Briggs publicó en <span class="fecha">1624</span> las primeras tablas logarítmicas de 14 decimales para números del 1 al 20,000 y del 90,000 al 100,000, estableciendo el estándar para cálculos científicos durante siglos. Posteriormente, la correspondencia entre <span class="matematico">Leonhard Euler</span> y <span class="matematico">Johann Bernoulli</span> en el siglo XVIII reveló la conexión esencial entre logaritmos y exponentes.
+                        </p>
+                        
+                        <div class="formula-destacada">
+                            <div class="formula">
+                                Si \( a^x = y \), entonces \( \log_a y = x \)
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Sección 3 -->
+                    <div class="historia-seccion">
+                        <h3>Evolución y Aplicaciones Modernas</h3>
+                        <p class="historia-parrafo">
+                            Durante los siglos XVIII y XIX, los logaritmos se convirtieron en herramientas indispensables para la ciencia y la ingeniería, con la <strong>regla de cálculo</strong> (basada en escalas logarítmicas) siendo el instrumento de cálculo por excelencia hasta la llegada de las calculadoras electrónicas en los años 1970.
+                        </p>
+                        <p class="historia-parrafo">
+                            En el siglo XX, los logaritmos trascendieron su función computacional original para convertirse en conceptos fundamentales del análisis matemático, teoría de números y ciencias de la computación. Hoy, el logaritmo natural (base \( e \)) es crucial en ecuaciones diferenciales y modelado de crecimiento exponencial, mientras que los logaritmos en base 2 son esenciales en teoría de la información y complejidad algorítmica.
+                        </p>
+                        <p class="historia-parrafo">
+                            Su historia ilustra cómo una herramienta computacional práctica evolucionó hacia un concepto matemático profundo con aplicaciones que van desde la compresión de datos hasta la medición de intensidad sísmica en la escala de Richter.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección Funciones -->
+        <div class="seccion" id="funciones">
+            <div class="cabecera-seccion">
+                <h1 class="titulo-seccion">Funciones Matemáticas</h1>
+                <div class="subtitulo-seccion">Evaluación de funciones logarítmicas y exponenciales</div>
+            </div>
+            
+            <div class="contenido-seccion">
+                <div class="funciones-contenido">
+                    <!-- Panel de código -->
+                    <div class="panel-codigo">
+                        <h3>10 Funciones Python con Logaritmos</h3>
+                        
+                        <div class="codigo">
+<span class="comentario"># 1. Valor de e</span><br>
+<span class="palabra-clave">import</span> math<br><br>
+
+<span class="comentario"># 2. Función original</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_exponencial</span>(x):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> <span class="numero">1</span>/(<span class="numero">2</span> + math.<span class="funcion-nombre">exp</span>(x))<br><br>
+
+<span class="comentario"># 3. Logaritmo natural</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_ln</span>(x):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> math.<span class="funcion-nombre">log</span>(x) <span class="palabra-clave">if</span> x &gt; <span class="numero">0</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span><br><br>
+
+<span class="comentario"># 4. Logaritmo base 10</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_log10</span>(x):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> math.<span class="funcion-nombre">log10</span>(x) <span class="palabra-clave">if</span> x &gt; <span class="numero">0</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span><br><br>
+
+<span class="comentario"># 5. Logaritmo cualquier base</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_log_base</span>(x, base):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> math.<span class="funcion-nombre">log</span>(x)/math.<span class="funcion-nombre">log</span>(base) <span class="palabra-clave">if</span> x&gt;<span class="numero">0</span> <span class="palabra-clave">and</span> base&gt;<span class="numero">0</span> <span class="palabra-clave">and</span> base!=<span class="numero">1</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span><br><br>
+
+<span class="comentario"># 6. Función con ln en denominador</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_ln_den</span>(x):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> x/math.<span class="funcion-nombre">log</span>(x+<span class="numero">1</span>) <span class="palabra-clave">if</span> x&gt;-<span class="numero">1</span> <span class="palabra-clave">and</span> math.<span class="funcion-nombre">log</span>(x+<span class="numero">1</span>)!=<span class="numero">0</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span><br><br>
+
+<span class="comentario"># 7. Función exponencial*logarítmica</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_exp_ln</span>(x):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> math.<span class="funcion-nombre">exp</span>(x) * math.<span class="funcion-nombre">log</span>(x+<span class="numero">2</span>) <span class="palabra-clave">if</span> x&gt;-<span class="numero">2</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span><br><br>
+
+<span class="comentario"># 8. Crecimiento logístico</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_logistica</span>(t, L=<span class="numero">1</span>, k=<span class="numero">1</span>, t0=<span class="numero">0</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> L/(<span class="numero">1</span> + math.<span class="funcion-nombre">exp</span>(-k*(t-t0)))<br><br>
+
+<span class="comentario"># 9. Decaimiento exponencial</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_decaimiento</span>(t, N0=<span class="numero">100</span>, tau=<span class="numero">1</span>):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> N0 * math.<span class="funcion-nombre">exp</span>(-t/tau)<br><br>
+
+<span class="comentario"># 10. Transformación logarítmica</span><br>
+<span class="palabra-clave">def</span> <span class="funcion-nombre">f_transform</span>(x, base=math.e):<br>
+&nbsp;&nbsp;&nbsp;&nbsp;<span class="palabra-clave">return</span> math.<span class="funcion-nombre">log</span>(x)/math.<span class="funcion-nombre">log</span>(base) <span class="palabra-clave">if</span> x&gt;<span class="numero">0</span> <span class="palabra-clave">and</span> base&gt;<span class="numero">0</span> <span class="palabra-clave">and</span> base!=<span class="numero">1</span> <span class="palabra-clave">else</span> <span class="cadena">"Error"</span>
+                        </div>
+                    </div>
+                    
+                    <!-- Calculadora -->
+                    <div class="calculadora">
+                        <h3>Evaluar Función 10: Transformación Logarítmica</h3>
+                        <p>Función: <strong>f_transform(x, base)</strong> = log_base(x) = ln(x)/ln(base)</p>
+                        
+                        <div class="input-group">
+                            <label for="valor-x">Valor de x (x > 0):</label>
+                            <input type="number" id="valor-x" step="any" value="1000" placeholder="Ej: 1000" min="0.0001">
+                        </div>
+                        
+                        <div class="input-group">
+                            <label for="base-log">Base del logaritmo (base > 0, base ≠ 1):</label>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <button type="button" class="base-btn" data-base="math.e">Base e</button>
+                                <button type="button" class="base-btn" data-base="10">Base 10</button>
+                                <button type="button" class="base-btn" data-base="2">Base 2</button>
+                            </div>
+                            <input type="number" id="base-log" step="any" value="math.e" placeholder="Ej: math.e, 10, 2">
+                        </div>
+                        
+                        <button class="btn-calcular" id="btn-calcular">Calcular Transformación</button>
+                        
+                        <div class="resultado" id="resultado">
+                            <div class="resultado-titulo">Resultado:</div>
+                            <div class="funcion-formula">
+                                log<sub><span id="base-display">e</span></sub>(<span id="x-display">1000</span>) = 
+                                ln(<span id="x-display2">1000</span>) / ln(<span id="base-display2">e</span>)
+                            </div>
+                            <div class="resultado-valor" id="resultado-valor">6.9078</div>
+                            <div style="margin-top: 15px; font-size: 0.95rem; color: var(--color-texto-claro);">
+                                <div><strong>Interpretación:</strong> <span id="interpretacion"></span></div>
+                                <div style="margin-top: 10px;">
+                                    <strong>Detalles:</strong><br>
+                                    ln(<span id="ln-x">1000</span>) = <span id="ln-valor">6.9078</span><br>
+                                    ln(<span id="ln-base">e</span>) = <span id="ln-base-valor">1.0000</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="margin-top: 30px; padding: 20px; background-color: #f0f7ff; border-radius: 8px;">
+                            <h4>Ejemplos de uso de transformación logarítmica:</h4>
+                            <ul style="padding-left: 20px; margin-top: 10px;">
+                                <li>Escala de Richter (intensidad sísmica)</li>
+                                <li>Decibelios (intensidad sonora)</li>
+                                <li>pH (acidez de soluciones)</li>
+                                <li>Compresión de datos (teoría de la información)</li>
+                                <li>Análisis de algoritmos (complejidad computacional)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sección Python -->
+        <div class="seccion" id="python">
+            <div class="cabecera-seccion">
+                <h1 class="titulo-seccion">Introducción a Python</h1>
+                <div class="subtitulo-seccion">El lenguaje de programación más versátil</div>
+            </div>
+            
+            <div class="contenido-seccion">
+                <div class="python-contenido">
+                    <div class="python-card">
+                        <h3><span class="python-icon">🐍</span> ¿Qué es Python?</h3>
+                        <p class="historia-parrafo">
+                            Python es uno de los lenguajes de programación más importantes y versátiles en la actualidad. Lo utilizan tanto grandes empresas tecnológicas como organizaciones científicas, y aprenderlo facilita luego el dominio de otros lenguajes. Este curso se presenta como una guía para comenzar desde cero y comprender sus bases de forma clara y práctica.
+                        </p>
+                        <p class="historia-parrafo">
+                            Se trata de un lenguaje de propósito general y de alto nivel, con una sintaxis sencilla y muy cercana al lenguaje humano. Es de tipado dinámico, orientado a objetos e interpretado, lo que hace más simple el manejo de variables y la detección de errores. Su código es fácil de leer y mantener, permitiendo desarrollar programas funcionales con pocas líneas y de manera ordenada y productiva.
+                        </p>
+                    </div>
+                    
+                    <div class="python-card">
+                        <h3><span class="python-icon">🚀</span> Características y Ventajas</h3>
+                        
+                        <div class="ventajas-grid">
+                            <div class="ventaja">
+                                <h4>Biblioteca Estándar</h4>
+                                <p>Amplia biblioteca estándar que permite reutilizar código para múltiples tareas.</p>
+                            </div>
+                            
+                            <div class="ventaja">
+                                <h4>Multiplataforma</h4>
+                                <p>Compatible con distintos sistemas operativos sin necesidad de modificar el programa.</p>
+                            </div>
+                            
+                            <div class="ventaja">
+                                <h4>Gran Comunidad</h4>
+                                <p>Extensa comunidad y alto valor en el mercado laboral, con alta demanda.</p>
+                            </div>
+                        </div>
+                        
+                        <p class="historia-parrafo">
+                            Python cuenta con una amplia biblioteca estándar que permite reutilizar código para múltiples tareas, es compatible con otros lenguajes y funciona en distintos sistemas operativos sin necesidad de modificar el programa. Además, posee una gran comunidad y un alto valor en el mercado laboral, ya que es una habilidad muy demandada.
+                        </p>
+                    </div>
+                    
+                    <div class="python-card">
+                        <h3><span class="python-icon">💼</span> Aplicaciones de Python</h3>
+                        <p class="historia-parrafo">
+                            Se usa en desarrollo web, aplicaciones móviles y de escritorio, automatización de tareas, análisis de datos, inteligencia artificial, pruebas de software y, aunque no es su principal enfoque, también en videojuegos. No está diseñado para programación de hardware de bajo nivel, pero es extremadamente versátil en casi todos los demás campos.
+                        </p>
+                        
+                        <ul class="python-lista">
+                            <li><strong>Desarrollo Web:</strong> Django, Flask, FastAPI</li>
+                            <li><strong>Ciencia de Datos:</strong> Pandas, NumPy, Scikit-learn</li>
+                            <li><strong>Inteligencia Artificial:</strong> TensorFlow, PyTorch</li>
+                            <li><strong>Automatización:</strong> Scripting, DevOps, testing</li>
+                            <li><strong>Educación:</strong> Enseñanza de programación</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="python-card">
+                        <h3><span class="python-icon">📜</span> Historia y Evolución</h3>
+                        <p class="historia-parrafo">
+                            Fue creado por <span class="matematico">Guido van Rossum</span>, quien publicó la primera versión en <span class="fecha">1991</span> con el objetivo de desarrollar un lenguaje potente pero fácil de aprender. Python 1 apareció en <span class="fecha">1994</span
